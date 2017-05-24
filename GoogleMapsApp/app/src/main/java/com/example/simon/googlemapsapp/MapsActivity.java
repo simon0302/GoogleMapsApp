@@ -1,12 +1,6 @@
 package com.example.simon.googlemapsapp;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,8 +18,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng currentLocation;
     private GoogleMap currentMap;
     private Location loc;
-
-
 
 
     @Override
@@ -51,7 +43,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
@@ -62,13 +53,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //current location
-        currentLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
+        currentLocation  = new LatLng(loc.getLatitude(), loc.getLongitude());
         Log.d("My Map", "current location retrieved");
         mMap.addMarker(new MarkerOptions().position(currentLocation).title("You are here"));
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
 
 
     }
+
 
 
 
