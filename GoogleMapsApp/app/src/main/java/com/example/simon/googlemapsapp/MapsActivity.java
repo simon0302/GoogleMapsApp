@@ -1,9 +1,14 @@
 package com.example.simon.googlemapsapp;
 
-import android.location.Location;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -46,14 +52,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(tucson));
         Log.d("My Map", "home location works");
 
+        //current location
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("My Map", "Permission failed");
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        Log.d("My Map", "Current Location dropped");
 
-        //current location (line 51 is wrong, deprecated method)
-        Location location = googleMap.getMyLocation();
+        //(line below is wrong, deprecated method)
+      /*  Location location = googleMap.getMyLocation();
         LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
         Log.d("My Map", "current location retrieved");
         mMap.addMarker(new MarkerOptions().position(currentLocation).title("You are here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation)); */
     }
+
+    //changes the map type from "normal" to "satellite" view
+    public void changeMapType(View v) {
+        if (mMap.getMapType() == GoogleMap.MAP_TYPE_NORMAL){
+            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        } else if (mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE) {
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
+    }
+
+
 
 }

@@ -1,3 +1,22 @@
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/changeViewButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="changeMapType"
+            android:text="Switch View" />
+
+    </LinearLayout>
+
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,3 +25,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.simon.googlemapsapp.MapsActivity" />
+
+
+</LinearLayout>
