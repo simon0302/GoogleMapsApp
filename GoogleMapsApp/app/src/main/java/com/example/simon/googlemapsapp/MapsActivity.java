@@ -4,7 +4,6 @@ import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -15,10 +14,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private LatLng currentLocation;
-    private GoogleMap currentMap;
-    private Location loc;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,25 +40,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
+        //initial marker
         LatLng tucson = new LatLng(32.2217, -110.9625);
         mMap.addMarker(new MarkerOptions().position(tucson).title("Born here"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(tucson));
         Log.d("My Map", "home location works");
 
 
-        //current location
-        currentLocation  = new LatLng(loc.getLatitude(), loc.getLongitude());
+        //current location (line 51 is wrong, deprecated method)
+        Location location = googleMap.getMyLocation();
+        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
         Log.d("My Map", "current location retrieved");
         mMap.addMarker(new MarkerOptions().position(currentLocation).title("You are here"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
 
-
     }
-
-
-
-
-
 
 }
