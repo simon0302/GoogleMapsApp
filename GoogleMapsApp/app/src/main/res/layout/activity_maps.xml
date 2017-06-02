@@ -32,6 +32,14 @@
             android:text="Switch View" />
 
         <Button
+            android:id="@+id/clear_markers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="clearOverlays"
+            android:text="Clear All Markers" />
+
+        <Button
             android:id="@+id/trackMe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

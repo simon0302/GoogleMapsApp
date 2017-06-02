@@ -46,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean isTracked = false;
     private Location myLocation;
     private static final float MY_LOC_ZOOM_FACTOR = 20.0f;
+    private boolean dotColor = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +122,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //get network status
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            if (isNetworkEnabled == true) {
+            if(isNetworkEnabled == true) {
                 Log.d("MyMaps", "getLocation: Network is enabled");
             }
 
@@ -145,12 +146,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListenerGPS);
                     Log.d("MyMaps", "getLocation: GPS update request is happening");
                     Toast.makeText(this, "Currently Using GPS", Toast.LENGTH_SHORT).show();
+                    /*if (dotColor == true) {
+                        dotColor = false;
+                    } */
                 }
                 if (isNetworkEnabled == true) {
                     Log.d("MyMaps", "getLocation: Network enabled & requesting location updates");
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListenerNetwork);
                     Log.d("MyMaps", "getLocation: Network update request is happening");
                     Toast.makeText(this, "Currently Using Network", Toast.LENGTH_SHORT).show();
+                    //dotColor = true;
                 }
 
             }
@@ -164,12 +169,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void trackMe(View view) {
         isTracked = true;
         if (isTracked == true) {
+            Toast.makeText(MapsActivity.this, "Currently getting your location", Toast.LENGTH_SHORT).show();
             getLocation();
             isTracked = false;
         }
         if (isTracked == false) {
             return;
         }
+
     }
 
     public void searchPlaces(View view) {
@@ -201,9 +208,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //drop a marker on the map (create a method called drop a marker)
             dropMarker(LocationManager.GPS_PROVIDER);
+            Log.d("MyMaps", "called dropmarker() method from GPS");
 
             // disable network updates (see locationManager API to remove updates)
             locationManager.removeUpdates(locationListenerNetwork);
+            dotColor = true;
 
         }
 
@@ -264,9 +273,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             //drop a marker on the map (create a method called drop a marker)
             dropMarker(LocationManager.NETWORK_PROVIDER);
+            Log.d("MyMaps", "called dropmarker() method from network");
 
-            //relaunch request for network location updates
-
+            //relaunch request for network location updates (not needed since already requested in previous code)
+            //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListenerNetwork);
+            dotColor = false;
         }
 
         @Override
@@ -311,16 +322,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             userLocation = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
 
             //display log d message and/or toast of coordinates
-            Toast.makeText(MapsActivity.this, "" + myLocation.getLatitude() + ", " +myLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, "" + myLocation.getLatitude() + ", " + myLocation.getLongitude(), Toast.LENGTH_SHORT).show();
 
             CameraUpdate update = CameraUpdateFactory.newLatLngZoom(userLocation, MY_LOC_ZOOM_FACTOR);
 
+            Circle myCircle;
+
             //add a shape for a marker (don't use standard teardrop marker)
-            Circle myCircle = mMap.addCircle(new CircleOptions().center(userLocation).radius(1).strokeColor(Color.MAGENTA).strokeWidth(2).fillColor(Color.MAGENTA));
+            //dotColor determines whether device is using network or GPS and changes the color accordingly
+
+            if (dotColor == true) {
+                myCircle = mMap.addCircle(new CircleOptions().center(userLocation).radius(1).strokeColor(Color.MAGENTA).strokeWidth(2).fillColor(Color.MAGENTA));
+                Log.d("MyMaps", "magenta dot laid for GPS");
+            } else if (dotColor == false) {
+                myCircle = mMap.addCircle(new CircleOptions().center(userLocation).radius(1).strokeColor(Color.GREEN).strokeWidth(2).fillColor(Color.GREEN));
+                Log.d("MyMaps", "green dot laid for network");
+            }
+
+
+
 
             mMap.animateCamera(update);
         }
 
+    }
+
+    public void clearOverlays(View v) {
+        mMap.clear();
     }
 
 
