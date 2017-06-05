@@ -339,9 +339,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("MyMaps", "green dot laid for network");
             }
 
-
-
-
             mMap.animateCamera(update);
         }
 
@@ -350,8 +347,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void clearOverlays(View v) {
         mMap.clear();
     }
-
-
 
 
 }
