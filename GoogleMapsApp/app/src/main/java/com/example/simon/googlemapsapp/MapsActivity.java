@@ -201,7 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
 
-            //calculates radius for every location add adds the ones that are 5 or under
+            //calculates radius for every location and adds the ones that are 5 or under
             for (int i = 0; i < addressList.size(); i++) {
                 Log.d("mymaps", "currently calculating distances");
                 Address currentAddress = addressList.get(i);
@@ -314,7 +314,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
 
-
         }
 
         @Override
@@ -403,7 +402,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             mMap.animateCamera(update);
         }
-
     }
 
     public void clearOverlays(View v) {
