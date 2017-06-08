@@ -3,29 +3,25 @@ package com.example.simon.googlemapsapp;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.icu.text.LocaleDisplayNames;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.Toast;
-
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -44,7 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean canGetLocation = false;
     private static final long MIN_TIME_BETWEEN_UPDATES = 1000 * 15;
     private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 5.0f;
-    private boolean isTracked = false;
+    private boolean isTrackable = true;
     private Location myLocation;
     private static final float MY_LOC_ZOOM_FACTOR = 20.0f;
     private boolean dotColor = false;
@@ -111,6 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void getLocation() {
+        isTrackable = false;
 
         try {
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -144,7 +141,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         return;
                     }
                     Log.d("MyMaps", "Permissions granted");
+                 /*   if (isTrackable = false) {
+                        locationManager.removeUpdates(locationListenerGPS);
+                        locationManager.removeUpdates(locationListenerNetwork);
+                        return;
+                    } */
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListenerGPS);
+                   // isTrackable = false;
                     Log.d("MyMaps", "getLocation: GPS update request is happening");
                     Toast.makeText(this, "Currently Using GPS", Toast.LENGTH_SHORT).show();
                     /*if (dotColor == true) {
@@ -153,12 +156,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 if (isNetworkEnabled == true) {
                     Log.d("MyMaps", "getLocation: Network enabled & requesting location updates");
+                  /*  if (isTrackable = false) {
+                        locationManager.removeUpdates(locationListenerGPS);
+                        locationManager.removeUpdates(locationListenerNetwork);
+                        return;
+                    } */
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListenerNetwork);
+                 //   isTrackable = false;
                     Log.d("MyMaps", "getLocation: Network update request is happening");
                     Toast.makeText(this, "Currently Using Network", Toast.LENGTH_SHORT).show();
                     //dotColor = true;
                 }
-
             }
         } catch (Exception e) {
             Log.d("MyMaps", "Caught an exception in getLocation");
@@ -168,16 +176,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void trackMe(View view) {
-        isTracked = true;
-        if (isTracked == true) {
+
+        if (isTrackable == true) {
             Toast.makeText(MapsActivity.this, "Currently getting your location", Toast.LENGTH_SHORT).show();
             getLocation();
-            isTracked = false;
+        } else if (isTrackable == false) {
+            locationManager.removeUpdates(locationListenerNetwork);
+            locationManager.removeUpdates(locationListenerGPS);
+            Toast.makeText(MapsActivity.this, "Stopped Tracking", Toast.LENGTH_SHORT).show();
+            isTrackable = true;
         }
-        if (isTracked == false) {
-            return;
-        }
-
     }
 
     public void searchPlaces(View view) {
@@ -196,14 +204,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             try {
                 //sets a 100 list search result
                 addressList = geocoder.getFromLocationName(location, 100);
-                Log.d("Mymaps", "made a max 100 entry search result");
+                Log.d("MyMaps", "made a max 100 entry search result");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             //calculates radius for every location and adds the ones that are 5 or under
             for (int i = 0; i < addressList.size(); i++) {
-                Log.d("mymaps", "currently calculating distances");
+                Log.d("myMaps", "currently calculating distances");
                 Address currentAddress = addressList.get(i);
 
                 double earthRadius = 3958.75; // miles (or 6371.0 kilometers)
@@ -217,12 +225,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 double dist = earthRadius * c;
 
                 //adds 5 mile radius
-                Log.d("mymaps","checking to see if radius is less than 5");
+                Log.d("myMaps","checking to see if radius is less than 5");
                 if (dist <= 5) {
                     distanceList.add(addressList.get(i));
                     Log.d("MyMaps", "radius is less than 5 and added it to distanceList");
                 } else {
-                    Log.d("mymaps","distance is not less than 5");
+                    Log.d("myMaps","distance is not less than 5");
                 }
             }
 
@@ -236,7 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 Address address = distanceList.get(i);
                 LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                Log.d("Mymaps", "currently adding markers");
+                Log.d("MyMaps", "currently adding markers");
                 mMap.addMarker(new MarkerOptions().position(latLng).title("Search Results"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             }
