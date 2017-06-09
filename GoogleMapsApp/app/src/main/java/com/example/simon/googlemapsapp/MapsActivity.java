@@ -198,20 +198,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (location.equals("")) {
             Toast.makeText(MapsActivity.this, "No Search Entered", Toast.LENGTH_SHORT).show();
             return;
+        } else if (myLocation == null) {
+            //handles the null location case
+            Toast.makeText(MapsActivity.this, "No known location; please press 'Track Me' then try searching again", Toast.LENGTH_SHORT).show();
+            return;
         } else if (location != null || !location.equals("")) {
+            mMap.clear();
             Log.d("MyMaps", "search feature started");
             Geocoder geocoder = new Geocoder(this);
             try {
-                //sets a 100 list search result
-                addressList = geocoder.getFromLocationName(location, 100);
-                Log.d("MyMaps", "made a max 100 entry search result");
+                //sets a 1000 list search result
+               // addressList = geocoder.getFromLocationName(location, 1000);
+
+                addressList = geocoder.getFromLocationName(location, 1000,(myLocation.getLatitude()-(5.0/60)), (myLocation.getLongitude()-(5.0/60)),(myLocation.getLatitude()+(5.0/60)),(myLocation.getLongitude()+(5.0/60)));
+                Log.d("MyMaps", "made a max 1000 entry search result");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             //calculates radius for every location and adds the ones that are 5 or under
-            for (int i = 0; i < addressList.size(); i++) {
-                Log.d("myMaps", "currently calculating distances");
+         /*   for (int i = 0; i < addressList.size(); i++) {
+                Log.d("MyMaps", "currently calculating distances");
                 Address currentAddress = addressList.get(i);
 
                 double earthRadius = 3958.75; // miles (or 6371.0 kilometers)
@@ -223,6 +230,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         * Math.cos(Math.toRadians(myLocation.getLatitude())) * Math.cos(Math.toRadians(currentAddress.getLatitude()));
                 double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                 double dist = earthRadius * c;
+
+                Log.d("MyMaps", location + "is" + Double.toString(dist)+" miles away");
 
                 //adds 5 mile radius
                 Log.d("myMaps","checking to see if radius is less than 5");
@@ -247,7 +256,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("MyMaps", "currently adding markers");
                 mMap.addMarker(new MarkerOptions().position(latLng).title("Search Results"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
+            } */
+
+         for (int i = 0; i < addressList.size(); i++) {
+             Address address = addressList.get(i);
+             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+             mMap.addMarker(new MarkerOptions().position(latLng).title("Search Results"));
+             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+         }
+
+
 
 
 
@@ -415,6 +433,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void clearOverlays(View v) {
         mMap.clear();
     }
-
 
 }
